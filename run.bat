@@ -1,64 +1,53 @@
 @echo off
-echo =====================================
-echo Checking prerequisites...
-echo =====================================
+echo Starting Notes App setup...
 
-where python >nul 2>nul
-if %ERRORLEVEL% NEQ 0 (
-    echo Error: Python is required but not installed.
+REM Check Python installation
+python --version > nul 2>&1
+if errorlevel 1 (
+    echo Python is not installed! Please install Python 3.11 or higher.
     exit /b 1
 )
 
-where npm >nul 2>nul
-if %ERRORLEVEL% NEQ 0 (
-    echo Error: Node.js/npm is required but not installed.
+REM Check Node.js installation
+node --version > nul 2>&1
+if errorlevel 1 (
+    echo Node.js is not installed! Please install Node.js 18 or higher.
     exit /b 1
 )
 
-echo =====================================
-echo Setting up Python virtual environment...
-echo =====================================
-
+REM Create and activate virtual environment
+echo Creating Python virtual environment...
 if not exist venv (
     python -m venv venv
 )
-call venv\Scripts\activate.bat
+call venv\Scripts\activate
 
-echo =====================================
+REM Install Python dependencies
 echo Installing Python dependencies...
-echo =====================================
 pip install -r requirements.txt
 
-echo =====================================
+REM Install Node.js dependencies
 echo Installing Node.js dependencies...
-echo =====================================
 cd frontend
 call npm install
+
+REM Return to root directory
 cd ..
 
-echo =====================================
-echo Setting up environment variables...
-echo =====================================
-if not exist backend\.env (
-    echo DEBUG=True > backend\.env
-    echo SECRET_KEY=your-secret-key-here >> backend\.env
-    echo ALLOWED_HOSTS=localhost,127.0.0.1 >> backend\.env
-)
-
-echo =====================================
+REM Setup database
 echo Setting up database...
-echo =====================================
 cd backend
 python manage.py makemigrations
 python manage.py migrate
-cd ..
 
-echo =====================================
-echo Starting servers...
-echo =====================================
-echo Frontend will be available at: http://localhost:5173
-echo Backend will be available at: http://localhost:8000
-echo Press Ctrl+C to stop all servers
+REM Start backend server
+echo Starting backend server...
+start cmd /k "cd backend && ..\venv\Scripts\python manage.py runserver"
 
+REM Start frontend server
+echo Starting frontend server...
 start cmd /k "cd frontend && npm run dev"
-start cmd /k "cd backend && python manage.py runserver"
+
+echo Setup complete! The application should be running at:
+echo Frontend: http://localhost:5173
+echo Backend: http://localhost:8000/api

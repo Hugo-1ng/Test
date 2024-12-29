@@ -5,7 +5,7 @@ const API_URL = 'http://localhost:8000/api';
 const api = {
   // Notes
   getNotes: (archived = false, category = null) => {
-    let url = `${API_URL}/notes/?archived=${archived}`;
+    let url = `${API_URL}/notes/?archived=${String(archived)}`;
     if (category) url += `&category=${category}`;
     return axios.get(url);
   },

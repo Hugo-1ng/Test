@@ -1,70 +1,53 @@
 #!/bin/bash
 
-echo "====================================="
-echo "Checking prerequisites..."
-echo "====================================="
+echo "Starting Notes App setup..."
 
-# Check for Python
+# Check Python installation
 if ! command -v python3 &> /dev/null; then
-    echo "Error: Python3 is required but not installed."
+    echo "Python is not installed! Please install Python 3.11 or higher."
     exit 1
 fi
 
-# Check for npm
-if ! command -v npm &> /dev/null; then
-    echo "Error: Node.js/npm is required but not installed."
+# Check Node.js installation
+if ! command -v node &> /dev/null; then
+    echo "Node.js is not installed! Please install Node.js 18 or higher."
     exit 1
 fi
-
-echo "====================================="
-echo "Setting up Python virtual environment..."
-echo "====================================="
 
 # Create and activate virtual environment
+echo "Creating Python virtual environment..."
 if [ ! -d "venv" ]; then
     python3 -m venv venv
 fi
 source venv/bin/activate
 
-echo "====================================="
+# Install Python dependencies
 echo "Installing Python dependencies..."
-echo "====================================="
 pip install -r requirements.txt
 
-echo "====================================="
+# Install Node.js dependencies
 echo "Installing Node.js dependencies..."
-echo "====================================="
 cd frontend
 npm install
+
+# Return to root directory
 cd ..
 
-echo "====================================="
-echo "Setting up environment variables..."
-echo "====================================="
-if [ ! -f "backend/.env" ]; then
-    echo "DEBUG=True" > backend/.env
-    echo "SECRET_KEY=your-secret-key-here" >> backend/.env
-    echo "ALLOWED_HOSTS=localhost,127.0.0.1" >> backend/.env
-fi
-
-echo "====================================="
+# Setup database
 echo "Setting up database..."
-echo "====================================="
 cd backend
 python manage.py makemigrations
 python manage.py migrate
-cd ..
 
-echo "====================================="
-echo "Starting servers..."
-echo "====================================="
-echo "Frontend will be available at: http://localhost:5173"
-echo "Backend will be available at: http://localhost:8000"
-echo "Press Ctrl+C to stop all servers"
+# Start backend server
+echo "Starting backend server..."
+python manage.py runserver &
 
-# Start servers in background
-(cd frontend && npm run dev) &
-(cd backend && python manage.py runserver) &
+# Start frontend server
+echo "Starting frontend server..."
+cd ../frontend
+npm run dev &
 
-# Wait for both background processes
-wait
+echo "Setup complete! The application should be running at:"
+echo "Frontend: http://localhost:5173"
+echo "Backend: http://localhost:8000/api"

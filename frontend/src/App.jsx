@@ -124,6 +124,18 @@ function App() {
     }
   };
 
+  const handleDeleteCategory = async (categoryId) => {
+    try {
+      await api.deleteCategory(categoryId);
+      showFeedback('Category deleted successfully');
+      setSelectedCategory('');
+      fetchCategories();
+    } catch (error) {
+      showFeedback('Error deleting category', 'error');
+      console.error('Error deleting category:', error);
+    }
+  };
+
   const handleTabChange = (event, newValue) => {
     setSelectedCategory(''); // Reset category filter when switching tabs
     setActiveTab(newValue);
@@ -163,36 +175,62 @@ function App() {
               </Button>
             </>
           )}
-          <FormControl sx={{ minWidth: 200 }}>
-            <InputLabel>Filter by Category</InputLabel>
-            <Select
-              value={selectedCategory}
-              label="Filter by Category"
-              onChange={(e) => setSelectedCategory(e.target.value)}
-            >
-              <MenuItem value="">
-                <em>All</em>
-              </MenuItem>
-              {categories.map((category) => (
-                <MenuItem key={category.id} value={category.id}>
-                  {category.name}
+          
+          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', ml: 'auto' }}>
+            <FormControl sx={{ minWidth: 200 }}>
+              <InputLabel>Filter by Category</InputLabel>
+              <Select
+                value={selectedCategory}
+                label="Filter by Category"
+                onChange={(e) => setSelectedCategory(e.target.value)}
+              >
+                <MenuItem value="">
+                  <em>All Categories</em>
                 </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <ToggleButtonGroup
-            value={viewMode}
-            exclusive
-            onChange={(e, newValue) => newValue && setViewMode(newValue)}
-            size="small"
-          >
-            <ToggleButton value="list" aria-label="list">
-              <ViewListIcon />
-            </ToggleButton>
-            <ToggleButton value="grid" aria-label="grid">
-              <ViewModuleIcon />
-            </ToggleButton>
-          </ToggleButtonGroup>
+                {categories.map((category) => (
+                  <MenuItem key={category.id} value={category.id}>
+                    {category.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            <FormControl sx={{ minWidth: 200 }}>
+              <InputLabel>Manage Categories</InputLabel>
+              <Select
+                value=""
+                label="Manage Categories"
+                onChange={(e) => {
+                  if (e.target.value) {
+                    handleDeleteCategory(e.target.value);
+                  }
+                }}
+              >
+                <MenuItem value="" disabled>
+                  <em>Select to Delete</em>
+                </MenuItem>
+                {categories.map((category) => (
+                  <MenuItem key={category.id} value={category.id}>
+                    Delete "{category.name}"
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            <ToggleButtonGroup
+              value={viewMode}
+              exclusive
+              onChange={(e, newMode) => newMode && setViewMode(newMode)}
+              sx={{ ml: 2 }}
+            >
+              <ToggleButton value="grid" aria-label="grid view">
+                <ViewModuleIcon />
+              </ToggleButton>
+              <ToggleButton value="list" aria-label="list view">
+                <ViewListIcon />
+              </ToggleButton>
+            </ToggleButtonGroup>
+          </Box>
         </Stack>
       </Box>
 
@@ -271,6 +309,9 @@ function App() {
         open={openCategoryForm}
         onClose={() => setOpenCategoryForm(false)}
         onSave={handleSaveCategory}
+        onCategoryChange={fetchCategories}
+        categories={categories}
+        api={api}
       />
     </Container>
   );

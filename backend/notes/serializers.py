@@ -4,7 +4,7 @@ from .models import Note, Category
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ['id', 'name', 'created_at']
+        fields = ['id', 'name', 'is_default', 'created_at']
 
 class NoteSerializer(serializers.ModelSerializer):
     categories = CategorySerializer(many=True, read_only=True)
@@ -16,7 +16,7 @@ class NoteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Note
-        fields = ['id', 'title', 'content', 'archived', 'categories', 'category_ids', 'created_at', 'updated_at']
+        fields = ['id', 'title', 'content', 'archived', 'categories', 'category_ids', 'created_at']
 
     def create(self, validated_data):
         category_ids = validated_data.pop('category_ids', [])

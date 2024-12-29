@@ -1,118 +1,99 @@
-# Notes Application
+# Notes App
 
-A web application that allows users to take notes, tag them, and filter them.
+A full-stack web application for managing notes with categories.
 
-## Requirements
+## Features
 
-- Python 3.8+
-- Node.js 18.17+
-- npm 9+
+- Create, edit, and delete notes
+- Archive/unarchive notes
+- Categorize notes with multiple categories
+- Default "Uncategorized" category for notes without specific categories
+- Filter notes by category
+- View notes in grid or list layout
+- View full note content in a modal
+- Manage categories (create/delete)
+- Responsive design
 
-## Backend Dependencies
+## Technology Stack
 
+### Backend
+- Python 3.11+
 - Django 5.0
-- Django REST Framework 3.14.0
-- django-cors-headers 4.3.1
-- python-dotenv 1.0.0
+- Django REST Framework
+- SQLite database
 
-## Frontend Dependencies
-
+### Frontend
 - React 18
 - Vite
-- React Router DOM 7
-- Tailwind CSS
+- Material-UI (MUI)
+- Axios for API calls
 
-## Project Structure
+## Prerequisites
 
-```
-├── backend/          # Django REST API
-├── frontend/         # React Frontend
-├── requirements.txt  # Python dependencies
-└── run.bat          # Script to run the application (Windows)
-└── run.sh           # Script to run the application (macOS/Linux)
-```
+Before running the application, make sure you have:
 
-## Setup and Running
+1. Python 3.11 or higher installed
+2. Node.js 18 or higher installed
+3. npm (comes with Node.js)
 
-### Quick Start
+## Installation and Setup
 
-#### Windows
-Simply run the `run.bat` script in the root directory:
-```bash
-run.bat
-```
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/Hugo-1ng/Test.git
+   cd Test
+   ```
 
-Or you can run it from the command line on the root directory:
-```
-./run.bat
-```
+2. Run the application:
 
-#### macOS/Linux
-Make the script executable and run it:
-```bash
-chmod +x run.sh
-./run.sh
-```
+   ### Windows
+   ```bash
+   run.bat
+   ```
 
-These scripts will:
-1. Check prerequisites (Python and Node.js)
-2. Set up Python virtual environment
-3. Install all dependencies (both Python and Node.js)
-4. Set up the database
-5. Start both frontend and backend servers
+   ### Linux/Mac
+   ```bash
+   chmod +x run.sh
+   ./run.sh
+   ```
 
-The application will be available at:
+The script will:
+- Create a Python virtual environment
+- Install Python dependencies
+- Install Node.js dependencies
+- Set up the database
+- Start both backend and frontend servers
+
+## Accessing the Application
+
+After running the setup script:
+
 - Frontend: http://localhost:5173
-- Backend API: http://localhost:8000
-
-### Manual Setup
-
-If you prefer to set up manually:
-
-1. Create and activate a virtual environment:
-   ```bash
-   python -m venv venv
-   .\venv\Scripts\activate
-   ```
-
-2. Install Python dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. Install Node.js dependencies:
-   ```bash
-   cd frontend
-   npm install
-   ```
-
-4. Set up the database:
-   ```bash
-   cd backend
-   python manage.py migrate
-   ```
-
-5. Start the servers:
-   - Backend:
-     ```bash
-     cd backend
-     python manage.py runserver
-     ```
-   - Frontend:
-     ```bash
-     cd frontend
-     npm run dev
-     ```
+- Backend API: http://localhost:8000/api
 
 ## API Endpoints
 
-- `GET /api/notes/` - List all active notes
-- `POST /api/notes/` - Create a new note
-- `GET /api/notes/{id}/` - Retrieve a specific note
-- `PUT /api/notes/{id}/` - Update a note
-- `DELETE /api/notes/{id}/` - Archive a note (soft delete)
-- `GET /api/notes/archived/` - List archived notes
-- `POST /api/notes/{id}/archive/` - Archive a note
-- `POST /api/notes/{id}/unarchive/` - Unarchive a note
-- `GET /api/categories/` - List all categories
-- `POST /api/categories/` - Create a new category
+- `/api/notes/` - CRUD operations for notes
+- `/api/categories/` - CRUD operations for categories
+- `/api/notes/{id}/archive/` - Archive a note
+- `/api/notes/{id}/unarchive/` - Unarchive a note
+
+## Development
+
+### Project Structure
+
+```
+.
+├── backend/
+│   ├── backend/         # Django project settings
+│   ├── notes/           # Notes app
+│   └── manage.py
+├── frontend/
+│   ├── src/
+│   │   ├── components/  # React components
+│   │   ├── services/    # API services
+│   │   └── App.jsx
+│   └── package.json
+├── run.bat             # Windows setup script
+├── run.sh              # Linux/Mac setup script
+└── requirements.txt    # Python dependencies
