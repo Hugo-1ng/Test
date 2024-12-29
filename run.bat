@@ -20,7 +20,7 @@ echo Creating Python virtual environment...
 if not exist venv (
     python -m venv venv
 )
-call venv\Scripts\activate
+call venv\Scripts\activate.bat
 
 REM Install Python dependencies
 echo Installing Python dependencies...
@@ -28,26 +28,26 @@ pip install -r requirements.txt
 
 REM Install Node.js dependencies
 echo Installing Node.js dependencies...
-cd frontend
+pushd frontend
 call npm install
-
-REM Return to root directory
-cd ..
+popd
 
 REM Setup database
 echo Setting up database...
-cd backend
+pushd backend
 python manage.py makemigrations
 python manage.py migrate
+popd
 
 REM Start backend server
 echo Starting backend server...
-start cmd /k "cd backend && ..\venv\Scripts\python manage.py runserver"
+start "Backend Server" cmd /k "cd /d %~dp0backend && ..\venv\Scripts\python.exe manage.py runserver"
 
 REM Start frontend server
 echo Starting frontend server...
-start cmd /k "cd frontend && npm run dev"
+start "Frontend Server" cmd /k "cd /d %~dp0frontend && npm run dev"
 
 echo Setup complete! The application should be running at:
 echo Frontend: http://localhost:5173
 echo Backend: http://localhost:8000/api
+pause

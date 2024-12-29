@@ -108,7 +108,13 @@ function App() {
       }
       fetchNotes();
     } catch (error) {
-      showFeedback('Error updating note archive status', 'error');
+      const errorMessage = error.response?.data?.error || 
+        (error.response?.status === 404 ? 'Note not found' : 'Error updating note archive status');
+      showFeedback(errorMessage, 'error');
+      if (error.response?.status === 404) {
+        // Refresh the notes list if the note was not found
+        fetchNotes();
+      }
       console.error('Error archiving note:', error);
     }
   };

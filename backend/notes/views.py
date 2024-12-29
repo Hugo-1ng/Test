@@ -1,9 +1,12 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from .models import Note, Category
 from .serializers import NoteSerializer, CategorySerializer
+import logging
+
+logger = logging.getLogger(__name__)
 
 # Create your views here.
 
@@ -51,16 +54,55 @@ class NoteViewSet(viewsets.ModelViewSet):
         else:
             note.categories.set(category_ids)
 
+    def destroy(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            self.perform_destroy(instance)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Note.DoesNotExist:
+            return Response(
+                {"error": "Note not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
     @action(detail=True, methods=['post'])
     def archive(self, request, pk=None):
-        note = self.get_object()
-        note.archived = True
-        note.save()
-        return Response(NoteSerializer(note).data)
+        try:
+            note = get_object_or_404(Note, pk=pk)
+            note.archived = True
+            note.save()
+            logger.info(f"Note {note.id} archived successfully")
+            return Response(NoteSerializer(note).data)
+        except Note.DoesNotExist:
+            logger.error(f"Note {pk} not found for archiving")
+            return Response(
+                {"error": "Note not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        except Exception as e:
+            logger.error(f"Error archiving note {pk}: {str(e)}")
+            return Response(
+                {"error": "Failed to archive note"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
     @action(detail=True, methods=['post'])
     def unarchive(self, request, pk=None):
-        note = self.get_object()
-        note.archived = False
-        note.save()
-        return Response(NoteSerializer(note).data)
+        try:
+            note = get_object_or_404(Note, pk=pk)
+            note.archived = False
+            note.save()
+            logger.info(f"Note {note.id} unarchived successfully")
+            return Response(NoteSerializer(note).data)
+        except Note.DoesNotExist:
+            logger.error(f"Note {pk} not found for unarchiving")
+            return Response(
+                {"error": "Note not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        except Exception as e:
+            logger.error(f"Error unarchiving note {pk}: {str(e)}")
+            return Response(
+                {"error": "Failed to unarchive note"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
